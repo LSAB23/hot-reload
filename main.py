@@ -2,7 +2,6 @@ import os
 import sys
 import subprocess
 import time
-from pathlib import Path
 
 
 file = sys.argv[1]
@@ -20,6 +19,7 @@ accepted_ext = ['*.py']
 
 def get_change_time():
     if use_folder:
+        from pathlib import Path
         lst = []
         for ext in accepted_ext:
             lst.extend(Path(path).glob(ext))
@@ -30,8 +30,6 @@ def get_change_time():
         return t
     else:
         return os.path.getmtime(file)
-
-
 
 
 while True:
