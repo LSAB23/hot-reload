@@ -2,54 +2,76 @@ import os
 import sys
 import subprocess
 import time
+from pathlib import Path
+from argparse import ArgumentParser
+from colorama import init, Fore, Style
 
+init(autoreset=True)
+# Adding argparse
+parser = ArgumentParser(prog='Hot-Reload',description='A simple program for running scripts when a file or specific files and a whole folder with execptions you provide',add_help=True, color=True)
 
-file = sys.argv[1]
+parser.add_argument('cmd', help='The command to run when the file is changed', type=str)
+parser.add_argument('-file', '-f', required=True, help='The file to watch for the change eg. "main.py"')
+parser.add_argument('-ext', default='py', help='Accepted files to check for change eg. py or "py,json,toml"')
+parser.add_argument('--folder', action='store_true',help='Watches the entire folder for change')
 
-use_folder = False
-if len(sys.argv) >=3:
-    if sys.argv[2] == 'f':
-        use_folder = True
-path = os.getcwd()
+commands = parser.parse_args(sys.argv[1:])
 
-running = False
-prompt = 'New Process Started'
+cmd = commands.cmd
+working_dir = Path(os.getcwd())
 
-accepted_ext = ['*.py']
+file_path = Path(working_dir / Path(commands.file))
+
+# check if file exist
+if not file_path.exists():
+    print(f'{Fore.RED}{file_path} File do not exist')
+    sys.exit(0)
+
+use_folder = commands.folder
+
+# add accepted execptions
+accepted_ext = [f'*.{ext}' for ext in commands.ext.split(',')]
+
 
 def get_change_time():
     if use_folder:
-        from pathlib import Path
         lst = []
         for ext in accepted_ext:
-            lst.extend(Path(path).glob(ext))
+            lst.extend(Path(working_dir).glob(ext))
         t = 0
-        for _ in lst:
-            t+=os.path.getmtime(_)
+        for file in lst:
+            t+=os.path.getmtime(file)
 
         return t
     else:
-        return os.path.getmtime(file)
+        return os.path.getmtime(file_path)
 
+
+running = False
+print('\n')
+prompt = lambda : print(f'{Fore.GREEN}HOTRELOAD: New Process Started\n')
 
 while True:
     try:
-        if path and not running:
-            os.chdir(path)
+        # create the start process
+        if working_dir and not running:
+            os.chdir(working_dir)
             last_change = get_change_time()
-            print(f'{prompt:<10}')
-            run = subprocess.Popen(str(f'py {file}').split())
+            prompt()
+            run = subprocess.Popen(cmd)
         current_change = get_change_time()
         running = True
         
+        # check if the file has changed 
         if last_change < current_change:
             run.terminate()
             run.kill()
-            print(f'{prompt:<10}')
+            prompt()
             
-            run = subprocess.Popen(str(f'py {file}').split())
+            run = subprocess.Popen(cmd)
             last_change = current_change
         time.sleep(0.3)
+    
     except KeyboardInterrupt:
         run.terminate()
         run.kill()
