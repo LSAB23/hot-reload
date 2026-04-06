@@ -1,5 +1,5 @@
 # This is a test program
 
 print('First Try')
-print('second')
-print('third')
+print('Second Try')
+print('Third Try')

@@ -4,7 +4,17 @@ import subprocess
 import time
 from pathlib import Path
 from argparse import ArgumentParser
-from colorama import init, Fore, Style
+from dataclasses import dataclass
+try:
+    from colorama import init, Fore
+except ImportError:
+    def init(*args, **kwargs):
+        return
+    
+    @dataclass
+    class Fore:
+        RED=''
+        GREEN = ''
 
 init(autoreset=True)
 # Adding argparse
