@@ -15,10 +15,12 @@ except ImportError:
     class Fore:
         RED=''
         GREEN = ''
-
+args = {'prog':'Hot-Reload','description':'A simple program for running scripts when a file or specific files and a whole folder with execptions you provide','add_help':True,'color':True}
+if sys.version_info.minor < 14:
+    args.pop('color')
 init(autoreset=True)
 # Adding argparse
-parser = ArgumentParser(prog='Hot-Reload',description='A simple program for running scripts when a file or specific files and a whole folder with execptions you provide',add_help=True, color=True)
+parser = ArgumentParser(**args)
 
 parser.add_argument('cmd', help='The command to run when the file is changed', type=str)
 parser.add_argument('-file', '-f', required=True, help='The file to watch for the change eg. "main.py"')
