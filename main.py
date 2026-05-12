@@ -15,7 +15,7 @@ except ImportError:
     class Fore:
         RED=''
         GREEN = ''
-args = {'prog':'Hot-Reload','description':'A simple program for running scripts when a file or specific files and a whole folder with execptions you provide','add_help':True,'color':True}
+args = {'prog':'Hot-Reload','description':'A simple program for running scripts when a file or specific files and a whole folder with execptions you provide eg. horeload "command" -f="the file to watch" -ext="extensions,py,json,toml" and --folder if it should watch the entire folder','add_help':True,'color':True}
 if sys.version_info.minor < 14:
     args.pop('color')
 init(autoreset=True)
